@@ -1,0 +1,23 @@
+<h1> PROBLEM LIST </h1>
+
+<table border ="1">
+    <thead>
+        <tr>
+            <td> ID </td>
+            <td> Title </td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for problem in object_list %}
+            <tr>
+                <td> {{problem.id}}</td>
+                <td> {{problem.title}}</td>
+                <td>
+                    <a href="view/{{object.id}}">View</a>
+                </td>
+            </tr> 
+      {% endfor %}
+    </tbody>
+</table>
+
+<a href="problem_create.html"> Have a New Problem </a>

@@ -1,0 +1,11 @@
+<h1>Problem Registration.</h1>
+<form method="post">
+    {%csrf_token%}
+    {{form.title.errors}}
+    {{form.title.label_tag}}
+    {{form.title}}
+    {{form.description.errors}}
+    {{form.description.label_tag}}
+    {{form.description}}
+    <input type="submit" name="create" value="Create">
+</form>

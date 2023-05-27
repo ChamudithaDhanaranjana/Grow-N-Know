@@ -1,0 +1,20 @@
+<h1> PROBLEM LIST </h1>
+
+<table border ="1">
+    <thead>
+        <tr>
+            <th> ID </th>
+            <th> Title </th>
+            <th> Description </th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for problem in object_list %}
+            <tr>
+                <td>{{problem.id}}</td>
+                <td>{{problem.title}}</td>
+                <td>{{problem.description}}</td>
+            </tr> 
+      {% endfor %}
+    </tbody>
+</table>
