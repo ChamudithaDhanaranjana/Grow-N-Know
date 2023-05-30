@@ -1,0 +1,18 @@
+<h1>Add Your Comment</h1>
+<form method="post">
+    {%csrf_token%}
+    <label for="email"> Email :</label>
+    <input id ="email" type="text" name="email">
+    <label for="comment"> Comment : </label>
+    <textarea name="comment" id="comment" cols="30" rows="10"> </textarea>
+    <input type="radio" name="goal" id="yes" >
+    <label for="yes"> Yes </label>
+    <input type="radio" name="goal" id="no" >
+    <label for="no"> No </label>
+    <input type="radio" name="goal" id="partial" >
+    <label for="partial"> Partially </label>
+    <button>
+        <a href="/feedbacklistview"></a>
+        Add Comment
+    </button>
+</form>
