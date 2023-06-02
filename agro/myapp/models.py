@@ -9,3 +9,14 @@ class Problem(models.Model):
         return self.title + ""
     def __str__(self) :
         return self.description + ""
+        
+class Feedback(models.Model):
+    email = models.CharField(max_length=150)
+    comment = models.CharField(max_length=500,null=True)
+    goal_achieved = models.CharField(max_length=100,null=True)
+    def __str__(self):
+        return self.email + ""
+    def __str__(self) :
+        return self.comment + ""
+    def __str__(self) :
+        return self.goal_achieved + ""

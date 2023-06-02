@@ -1,0 +1,25 @@
+<h1> FEEDBACK LIST </h1>
+
+<table border ="1">
+    <thead>
+        <tr>
+            <td> ID </td>
+            <td> Email </td>
+            <td> Goal_Achieved </td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for object in object_list %}
+            <tr>
+                <td> {{object.id}}</td>
+                <td> {{object.email}}</td>
+                <td> {{object.goal_achieved}}</td>
+                <td>
+                    <a href="feedbackdetailview/{{feedback.id}}">View</a>
+                </td>
+            </tr> 
+      {% endfor %}
+    </tbody>
+</table>
+
+<a href="feedbackreateview"> Have a New Feedback </a>
