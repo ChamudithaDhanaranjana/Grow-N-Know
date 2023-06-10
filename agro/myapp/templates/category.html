@@ -1,0 +1,10 @@
+<h1>Book Management</h1>
+<form method="POST">
+    {% csrf_token %}
+    {{form}}
+
+    <br>
+    {{formset.Management_form}}
+    {{formset}}
+    <input type="submit">
+</form>

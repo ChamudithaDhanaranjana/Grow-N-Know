@@ -1,25 +1,36 @@
-<h1> FEEDBACK LIST </h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1> FEEDBACK LIST </h1>
 
-<table border ="1">
-    <thead>
-        <tr>
-            <td> ID </td>
-            <td> Email </td>
-            <td> Goal_Achieved </td>
-        </tr>
-    </thead>
-    <tbody>
-        {% for object in object_list %}
+    <table border ="1">
+        <thead>
             <tr>
-                <td> {{object.id}}</td>
-                <td> {{object.email}}</td>
-                <td> {{object.goal_achieved}}</td>
-                <td>
-                    <a href="feedbackdetailview/{{feedback.id}}">View</a>
-                </td>
-            </tr> 
-      {% endfor %}
-    </tbody>
-</table>
+                <td> ID </td>
+                <td> Email </td>
+                <td> Goal_Achieved </td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for feedback in object_list %}
+                <tr>
+                    <td> {{object.id}}</td>
+                    <td> {{object.email}}</td>
+                    <td> {{object.goal_achieved}}</td>
+                    <td>
+                        <a href="feedbackdetailview/{{feedback.id}}">View</a>
+                    </td>
+                </tr> 
+        {% endfor %}
+        </tbody>
+    </table>
 
 <a href="feedbackreateview"> Have a New Feedback </a>
+</body>
+</html>
