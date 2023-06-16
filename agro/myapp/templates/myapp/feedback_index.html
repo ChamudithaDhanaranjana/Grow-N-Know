@@ -20,9 +20,9 @@
         <tbody>
             {% for feedback in object_list %}
                 <tr>
-                    <td> {{object.id}}</td>
-                    <td> {{object.email}}</td>
-                    <td> {{object.goal_achieved}}</td>
+                    <td> {{feedback.id}}</td>
+                    <td> {{feedback.email}}</td>
+                    <td> {{feedback.goal_achieved}}</td>
                     <td>
                         <a href="feedbackdetailview/{{feedback.id}}">View</a>
                     </td>
@@ -31,6 +31,6 @@
         </tbody>
     </table>
 
-<a href="feedbackreateview"> Have a New Feedback </a>
+<a href="feedbackcreateview"> Have a New Feedback </a>
 </body>
 </html>

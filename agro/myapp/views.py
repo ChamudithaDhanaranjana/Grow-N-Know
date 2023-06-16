@@ -1,12 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django import forms
-from myapp.models import User, Problem, Feedback, Category, Item
-from .forms import CategoryForm, ItemForm
-from django.forms.formsets import formset_factory
-from .models import Item
+from django.http import HttpResponse
+from myapp.models import User, Problem, Feedback, Category, Item, Order, OrderItem
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView
 from django.views.generic.detail import DetailView
+from .forms import ItemForm, OrderForm
+from django.forms.models import inlineformset_factory
 
 # Create your views here.
 # ..............................User
@@ -77,40 +77,61 @@ class ItemListView(ListView):
     template_name_suffix = "_index"
     model = Item
 
+# ..............................Order
+class OrderCreateView(CreateView):
+    template_name_suffix = "_create"
+    model = Order
+    fields = "__all__"
+    success_url = "feedbacklistview"
 
-# def category(request):
-#     form = CategoryForm()
-#     ItemFormSet = formset_factory(ItemForm)
-#     formset = ItemFormSet()
+class OrderListView(ListView):
+    template_name_suffix = "_index"
+    model = Order
 
-#     if request.method == 'POST':
-#         form = CategoryForm(request.POST)
-#         formset = ItemFormSet(request.POST)
+def item(request, pk=None):
+    model = Item.objects.get(pk=pk) if pk else Item()
+    data = Item.objects.all()
 
-#         if form.is_valid() and formset.is_valid():
-#             category = form.save()
-#             items = []
+    if request.POST.get('save'):
+        form = ItemForm(request.POST, instance = model) 
+        if form.is_valid():
 
-#             for inner_form in formset:
-#                 title = inner_form.cleaned_data.get('title')
-#                 description = inner_form.cleaned_data.get('description')
-#                 link = inner_form.cleaned_data.get('link')
-#                 image = inner_form.cleaned_data.get('image')
-#                 item = Item(
-#                     category=category,
-#                     title=title,
-#                     description=description,
-#                     link=link,
-#                     image=image
-#                 )
-#                 items.append(item)
+            form.save()
 
-#             Item.objects.bulk_create(items)
+            return redirect('/myapp/items')
+    else:
 
-#     context={'form':form, 'formset':formset}
-#     return render(request, 'category.html', context)
+        form = ItemForm(instance=model)
 
-# def item(request):
-#     form = ItemForm()
-#     context={'form':form}
-#     return render(request, 'item.html', context)
+        if request.POST:
+            model.delete()
+            return redirect('/myapp/items')
+        
+    context = {'form':form, 'data':data}
+    return render(request, 'myapp\item_create.html', context)
+
+def order(request, pk=None):
+    model = Order.objects.get(pk=pk) if pk else Order()
+    data = Order.objects.all()
+
+    OrderProductFormSet = inlineformset_factory(Order, OrderItem, fields='__all__', extra = 0 if pk else 1)
+
+    if request.POST.get('save'):
+        form = OrderForm(request.POST, instance = model) 
+        formset = OrderProductFormSet(request.POST, instance=model)
+
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            formset.save()
+            return redirect('/myapp/orders')
+
+    else:
+        form = OrderForm(instance=model)
+        formset = OrderProductFormSet(instance=model)
+
+        if request.POST:
+            model.delete()
+            return redirect('/myapp/orders')
+
+    context = {'form':form, 'data':data, 'formset':formset}
+    return render(request, 'myapp\order_create.html', context)

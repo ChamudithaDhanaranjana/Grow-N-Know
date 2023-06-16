@@ -1,0 +1,23 @@
+{% load static %}
+<table border="1">
+    <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Time</th>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in data %}
+        <tr>
+            <td>{{d.name}}</td>
+            <td>{{d.created_at}}</td>
+            <td>{{d.products.all|join:"<br> "}}</td>
+            <td>{{d.quantity}}</td>
+            <td><a href="{{d.id}}">View</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
