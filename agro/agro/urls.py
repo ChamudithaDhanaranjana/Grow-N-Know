@@ -16,9 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from myapp import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('myapp/', include('myapp.urls')),
     path("__reload__/", include("django_browser_reload.urls")),
+
+    path("myapp/", include("django.contrib.auth.urls")),
+    
+    path("accounts/profile/", views.viewprofile),
+    path('', views.homepage, name= "home"),
+    path('myapp/register/', views.registeruser),
+    path('myapp/', include('myapp.urls')),
 ]

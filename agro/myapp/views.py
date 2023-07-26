@@ -7,8 +7,27 @@ from django.views.generic.edit import CreateView
 from django.views.generic.detail import DetailView
 from .forms import ItemForm, OrderForm
 from django.forms.models import inlineformset_factory
+from django.template.response import TemplateResponse
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 # Create your views here.
+def viewprofile(request):
+    return TemplateResponse(request,'profile.html')
+
+def homepage(request):
+    return TemplateResponse(request,'home.html')
+
+@user_passes_test(lambda u:not u.is_authenticated)
+def registeruser(request):
+    if request.method== 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+        
+    form = UserCreationForm
+    context = {'form': form}
+    return render(request, 'registrationform.html', context)
 # ..............................User
 class UserCreateView(CreateView):
     template_name_suffix = "_create"
@@ -38,6 +57,7 @@ class ProblemDetailView(DetailView):
 
 def problem_create(request):
     return render(request, 'myapp/problem_create.html')
+
 
 # ..............................Feedback
 class FeedbackListView(ListView):
@@ -77,16 +97,6 @@ class ItemListView(ListView):
     template_name_suffix = "_index"
     model = Item
 
-# ..............................Order
-class OrderCreateView(CreateView):
-    template_name_suffix = "_create"
-    model = Order
-    fields = "__all__"
-    success_url = "feedbacklistview"
-
-class OrderListView(ListView):
-    template_name_suffix = "_index"
-    model = Order
 
 def item(request, pk=None):
     model = Item.objects.get(pk=pk) if pk else Item()
@@ -109,6 +119,19 @@ def item(request, pk=None):
         
     context = {'form':form, 'data':data}
     return render(request, 'myapp\item_create.html', context)
+
+# ..............................Order
+class OrderCreateView(CreateView):
+    template_name_suffix = "_create"
+    model = Order
+    fields = "__all__"
+    success_url = "feedbacklistview"
+
+class OrderListView(ListView):
+    template_name_suffix = "_index"
+    model = Order
+
+
 
 def order(request, pk=None):
     model = Order.objects.get(pk=pk) if pk else Order()

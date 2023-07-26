@@ -49,16 +49,13 @@ class Category(models.Model):
         return self.description + ""
     def __str__(self) :
         return self.link + ""
-    def __str__(self) :
-        return self.image + ""
 
 class Item(models.Model):
     name = models.CharField(max_length=150)
     available_quantity = models.IntegerField(null=True)
     unit_price = models.IntegerField(null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
-    def __str__(self):
-        return self.name + ""
+    
 
 class Order(models.Model):
     name = models.CharField(max_length=150)
