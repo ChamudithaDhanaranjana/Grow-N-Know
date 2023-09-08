@@ -1,14 +1,35 @@
-from django.shortcuts import render, redirect
-from django import forms
-from django.http import HttpResponse
-from myapp.models import User, Problem, Feedback, Category, Item, Order, OrderItem
+from audioop import reverse
+from pyexpat.errors import messages
+
+from django.views import View
+from myapp.models import Solution
+from myapp.models import Problem, Feedback, Category, Item, Order, OrderItem
 from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView
 from django.views.generic.detail import DetailView
-from .forms import ItemForm, OrderForm
+from .forms import CreateUserForm, ItemForm, OrderForm, SolutionForm
 from django.forms.models import inlineformset_factory
 from django.template.response import TemplateResponse
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import render, redirect, get_object_or_404
+from django.core.mail import EmailMessage
+from django.contrib import messages
+from django.contrib.auth.decorators import user_passes_test
+
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.core.mail import EmailMessage
+from myapp.tokens import account_activation_token
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.utils.safestring import mark_safe
+from django.template.loader import render_to_string
 
 # Create your views here.
 def viewprofile(request):
@@ -16,29 +37,6 @@ def viewprofile(request):
 
 def homepage(request):
     return TemplateResponse(request,'home.html')
-
-@user_passes_test(lambda u:not u.is_authenticated)
-def registeruser(request):
-    if request.method== 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-        
-    form = UserCreationForm
-    context = {'form': form}
-    return render(request, 'registrationform.html', context)
-# ..............................User
-class UserCreateView(CreateView):
-    template_name_suffix = "_create"
-    model = User
-    fields = "__all__"
-    success_url = "userlistview"
-
-class UserListView(ListView):
-    template_name_suffix = "_index"
-    model = User
-    paginate_by = 3
 
 # ..............................Problem
 class ProblemCreateView(CreateView):
@@ -52,8 +50,15 @@ class ProblemListView(ListView):
     model = Problem
    
 class ProblemDetailView(DetailView):
-    template_name_suffix = "_show"
     model = Problem
+    template_name_suffix = "_show"  # Make sure this matches your template naming convention
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        problem = self.object  # Get the problem object from the view
+        solutions = Solution.objects.filter(problem=problem)  # Query solutions related to the problem
+        context['solutions'] = solutions  # Add solutions to the context
+        return context
 
 def problem_create(request):
     return render(request, 'myapp/problem_create.html')
@@ -158,3 +163,105 @@ def order(request, pk=None):
 
     context = {'form':form, 'data':data, 'formset':formset}
     return render(request, 'myapp\order_create.html', context)
+
+def add_solution(request, problem_id):
+    problem = get_object_or_404(Problem, pk=problem_id)
+    
+    if request.method == 'POST':
+        form = SolutionForm(request.POST)
+        if form.is_valid():
+            solution = form.save(commit=False)
+            solution.problem = problem
+            solution.save()
+            return redirect('problem_detail', pk=problem_id)
+    else:
+        form = SolutionForm()
+
+    return render(request, 'myapp/add_solution.html', {'form': form, 'problem': problem})
+
+def problem_detail(request, pk):
+    problem = get_object_or_404(Problem, pk=pk)
+    solutions = problem.solutions.all()
+    return render(request, 'myapp/problem_show.html', {'problem': problem, 'solutions': solutions})
+
+class MyView(View):
+    def get(self, request, pk):
+        # pk contains the value extracted from the URL
+        return redirect(reverse('problem_detail', kwargs={'pk': pk}))
+    
+class SolutionListView(ListView):
+    model = Solution
+    template_name = 'myapp/solution_list.html'
+    context_object_name = 'solutions'
+
+    def get_queryset(self):
+        # Get the problem ID from the URL
+        problem_id = self.kwargs['pk']  # Get the problem PK from URL
+        return Solution.objects.filter(problem__pk=problem_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['problem_id'] = self.kwargs['problem_id']  # Pass problem ID to the template
+        return context
+class SolutionRemoveView(View):
+    def post(self, request, pk):
+        solution = Solution.objects.get(pk=pk)
+        solution.delete()
+        return redirect('problem_detail', pk=solution.problem.pk)
+
+class SolutionUpdateView(View):
+    def post(self, request, pk):
+        solution = Solution.objects.get(pk=pk)
+        # Handle form submission to update the solution
+        if request.method == 'POST':
+            # Update the solution fields as needed
+            solution.description = request.POST.get('description')
+            solution.save()
+        return redirect('problem_detail', pk=solution.problem.pk)
+    
+from django.utils.safestring import mark_safe  
+
+def activate(request, uidb64, token):
+    return redirect('login')
+
+def activateEmail(request, user, to_email):
+    mail_subject = "Activate your user account."
+    message = render_to_string("template_activate_account.html",{
+        'user': user.username,
+        'domain': get_current_site(request).domain,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': account_activation_token.make_token(user),
+        "protocol": 'http' if request.is_secure() else 'http'
+    })
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    if email.send():
+        message = mark_safe(f'Dear {user},  please go to your email <b>{to_email}</b> inbox and click on\
+                    received activation link to confirm and complete the registration. <b>Note:</b> Check your spam folder.')
+        messages.success(request, message)
+    else:
+        messages.error(request, f'Problem sending email to {to_email}, check if you typed it correctly.')
+
+@user_passes_test(lambda u:not u.is_authenticated) 
+def registeruser(request):
+    form=CreateUserForm
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.is_active
+            user.save()
+            activateEmail(request, user, form.cleaned_data.get('email'))
+
+            user = form.cleaned_data.get('username')
+            messages.success(request, 'Account was created for '+user)
+            return redirect('login')
+        
+        else:
+            for error in list(form.errors.values()):
+                messages.error(request, error)
+
+    return render(
+        request=request,
+        template_name="registrationform.html",
+        context={"form":form}
+    )            

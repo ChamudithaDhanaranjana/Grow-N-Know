@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>{{ problem.title }}</h1>
+  <p>{{ problem.description }}</p>
+
+  <a href="{% url 'solution_list' pk=problem.pk %}">View Solutions</a>
+{% endblock %}

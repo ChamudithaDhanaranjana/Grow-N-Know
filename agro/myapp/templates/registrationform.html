@@ -4,3 +4,75 @@
     {{form}}
     <input type="submit" value="Sign in">
 </form>
+{% load static tailwind_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category</title>
+    {% tailwind_css %}
+</head>
+<body>
+    <div class="m-20" style ="margin-left: 10%; margin-top:5%;">
+        <div class="grid grid-cols-3 divide-x">
+          <h1 class="mb-4 text-3xl text-center font-bold leading-none tracking-tight text-lime-600 md:text-3xl lg:text-3xl dark:text-lime-600">Category Registration</h1>
+        </div>
+        <div class="grid grid-cols-3 divide-x">
+          <form method="post">
+            {%csrf_token%}
+            <div class="">
+              <div class="flex">
+                <label for=""class="block mb-1  text-sm tracking-tight font-bold text-2xl text-lime-700 dark:text-lime-700">Title</label>
+                <div class="text-red-500 ml-6 mt-0 text-sm">
+                  {{form.title.errors}}
+                </div>
+              </div>
+              <div >
+                <input value="{{category.title}}" id="title_category" name="title" type="text" class="border-y-2 border-lime-700 text-lime-700 placeholder-gray text-sm focus:ring-lime-700 focus:border-lime-700 0 block w-full p-2.5 dark: dark:border-lime-700" placeholder="Type your title">
+              </div>
+            </div>
+            <div class="mb-6">  
+              <div class="flex">
+                <label for=""class="block mb-1 mt-3 text-sm tracking-tight font-bold text-2xl text-lime-700 dark:text-lime-700">Description</label> 
+                <div class="text-red-500 ml-6 mt-3 text-sm">
+                  {{form.description.errors}}
+                </div>
+              </div>
+              <div>
+                <textarea rows="4" cols="50" value="{{category.description}}" id="description_category" name="description" type="textarea" class="border-y-2 border-lime-700 text-lime-700 placeholder-gray text-sm focus:ring-lime-700 focus:border-lime-700 0 block w-full p-2.5 dark: dark:border-lime-700" placeholder="Type your description"></textarea>
+              </div>
+            </div>
+            <div class="">
+                <div class="flex">
+                    <label for=""class="block mb-1  text-sm tracking-tight font-bold text-2xl text-lime-700 dark:text-lime-700">Link</label>
+                    <div class="text-red-500 ml-6 mt-0 text-sm">
+                    {{form.link.errors}}
+                    </div>
+                </div>
+                <div >
+                    <input value="{{category.link}}" id="link_category" name="link" type="text" class="border-y-2 border-lime-700 text-lime-700 placeholder-gray text-sm focus:ring-lime-700 focus:border-lime-700 0 block w-full p-2.5 dark: dark:border-lime-700" placeholder="Type your title">
+                </div>
+            </div>
+            <div class="">
+                <div class="flex">
+                    <label for=""class="block mb-1  text-sm tracking-tight font-bold text-2xl text-lime-700 dark:text-lime-700">Link</label>
+                    <div class="text-red-500 ml-6 mt-0 text-sm">
+                    {{form.image.errors}}
+                    </div>
+                </div>
+                <div >
+                    <input value="{{category.image}}" id="image_category" name="image" type="text" class="border-y-2 border-lime-700 text-lime-700 placeholder-gray text-sm focus:ring-lime-700 focus:border-lime-700 0 block w-full p-2.5 dark: dark:border-lime-700" placeholder="Type your title">
+                </div>
+            </div>
+            <div >
+              <input type="submit" name="create" value="Create" class="mt-3 text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+            </div>
+        </div>
+    </form>
+    </div>
+      </div>
+</body>
+</html>

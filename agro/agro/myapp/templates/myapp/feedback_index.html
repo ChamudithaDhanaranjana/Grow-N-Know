@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1> FEEDBACK LIST </h1>
+
+    <table border ="1">
+        <thead>
+            <tr>
+                <td> ID </td>
+                <td> Email </td>
+                <td> Goal_Achieved </td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for feedback in object_list %}
+                <tr>
+                    <td> {{feedback.id}}</td>
+                    <td> {{feedback.email}}</td>
+                    <td> {{feedback.goal_achieved}}</td>
+                    <td>
+                        <a href="feedbackdetailview/{{feedback.id}}">View</a>
+                    </td>
+                </tr> 
+        {% endfor %}
+        </tbody>
+    </table>
+
+<a href="feedbackcreateview"> Have a New Feedback </a>
+</body>
+</html>

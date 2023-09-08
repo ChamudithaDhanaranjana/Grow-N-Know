@@ -1,16 +1,15 @@
-from django.urls import path,re_path
+from django.urls import path, re_path
+from myapp.views import SolutionRemoveView, SolutionUpdateView
+from myapp.views import SolutionListView
 from myapp import views
-from myapp.views import UserCreateView, UserListView, ProblemListView, ProblemDetailView, ProblemCreateView
+from myapp.views import ProblemListView, ProblemDetailView, ProblemCreateView
 from myapp.views import FeedbackListView, FeedbackDetailView, FeedbackCreateView
 from myapp.views import CategoryListView, CategoryCreateView
 from myapp.views import ItemListView, ItemCreateView
 from myapp.views import OrderListView, OrderCreateView
-from django import forms
+ # Import the cart views
 
- 
 urlpatterns = [
-    path('usercreateview', UserCreateView.as_view()),
-    path('userlistview', UserListView.as_view()),
 
     path('problemlistview/', ProblemListView.as_view()),
     path('problemlistview/problemcreateview/', ProblemCreateView.as_view()),
@@ -37,6 +36,15 @@ urlpatterns = [
     path('orderlistview/', OrderListView.as_view()),
     path('ordercreateview/', OrderCreateView.as_view()),
 
-    re_path(r'^items/(?P<pk>\d+)?$',views.item),
-    re_path(r'^orders/(?P<pk>\d+)?$',views.order),
+    re_path(r'^items/(?P<pk>\d+)?$', views.item),
+    re_path(r'^orders/(?P<pk>\d+)?$', views.order),
+
+    path('problem/<int:problem_id>/solution_create/', views.add_solution),
+    path('problem/<int:problem_id>/add_solution/', views.add_solution, name='add_solution'),
+    path('problem/<int:pk>/', views.ProblemDetailView.as_view(), name='problem_detail'),
+    path('problem/<int:pk>/', views.problem_detail),
+    path('problem/<int:pk>/solutions/', views.SolutionListView.as_view(), name='solution_list'),
+    path('problem/<int:problem_id>/solutions/', SolutionListView.as_view(), name='problem_solutions'),
+    path('solution/remove/<int:pk>/', SolutionRemoveView.as_view(), name='solution_remove'),
+    path('solution/update/<int:pk>/', SolutionUpdateView.as_view(), name='solution_update'),
 ]

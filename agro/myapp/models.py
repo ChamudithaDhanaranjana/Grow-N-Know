@@ -1,21 +1,7 @@
+from asyncio import AbstractServer
+from msilib.schema import SelfReg
 from django.db import models
 from django.utils import timezone
-
-# Create your models here.
-class User(models.Model):
-    name = models.CharField(max_length=100)
-    address = models.CharField(max_length=200)
-    province = models.CharField(max_length=20)
-    district = models.CharField(max_length=20)
-    def __str__(self):
-        return self.name + ""
-    def __str__(self):
-        return self.address + ""
-    def __str__(self):
-        return self.province + ""
-    def __str__(self):
-        return self.district + ""
-
     
 class Problem(models.Model):
     title = models.CharField(max_length=100)
@@ -25,6 +11,13 @@ class Problem(models.Model):
     def __str__(self) :
         return self.description + ""
     
+class Solution(models.Model):
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name='solutions')
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Solution for {self.problem.title}"
     
 class Feedback(models.Model):
     email = models.CharField(max_length=150)
