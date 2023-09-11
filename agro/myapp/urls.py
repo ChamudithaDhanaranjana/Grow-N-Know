@@ -47,4 +47,10 @@ urlpatterns = [
     path('problem/<int:problem_id>/solutions/', SolutionListView.as_view(), name='problem_solutions'),
     path('solution/remove/<int:pk>/', SolutionRemoveView.as_view(), name='solution_remove'),
     path('solution/update/<int:pk>/', SolutionUpdateView.as_view(), name='solution_update'),
+
+
+    path('add_to_cart/<int:item_id>/', views.add_to_cart, name='add_to_cart'),
+    path('view_cart/', views.view_cart, name='view_cart'),
+    path('update_cart/<int:item_id>/', views.update_cart, name='update_cart'),
+    path('remove_from_cart/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
 ]

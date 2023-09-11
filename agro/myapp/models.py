@@ -1,7 +1,9 @@
 from asyncio import AbstractServer
 from msilib.schema import SelfReg
 from django.db import models
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.contrib.auth.models import User
     
 class Problem(models.Model):
     title = models.CharField(max_length=100)
@@ -70,3 +72,9 @@ class OrderItem(models.Model):
     class Meta:
         db_table ='myapp_order_item'
         unique_together = ('order', 'item',)
+
+class CartItem(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+

@@ -10,6 +10,7 @@
     {% tailwind_css %}
 </head>
 <body  id="bg" style="background-size: 55%; background-color: #EAEAEA; background-position-x: right; background-repeat:no-repeat ; background-image: url('{% static "myapp/images/background.jpg" %}');">
+    {% extends "base.html" %}
     <div class="m-20" style="margin-left: 10%; margin-top:5%;">
         <div class="grid grid-cols-3 divide-x">
             <h1 class="mb-4 text-3xl text-center font-bold leading-none tracking-tight text-lime-600 md:text-3xl lg:text-3xl dark:text-lime-600">

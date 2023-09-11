@@ -1,0 +1,17 @@
+<!-- success_message.html -->
+<div id="success-message" class="success-message">
+    <p>{{ message }}</p>
+</div>
+<script>
+    // Function to display the success message
+    function showSuccessMessage(message) {
+        var successMessage = document.getElementById("success-message");
+        successMessage.innerHTML = message;
+        successMessage.style.display = "block";
+
+        // Automatically hide the message after a few seconds (adjust the duration as needed)
+        setTimeout(function () {
+            successMessage.style.display = "none";
+        }, 3000); // 3000 milliseconds (3 seconds)
+    }
+</script>

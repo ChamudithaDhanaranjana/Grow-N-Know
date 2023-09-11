@@ -1,7 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-<h1>Home Page</h1>
+{% load static tailwind_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body id="bg" style="background-size: 55%; background-color: #EAEAEA; background-position-x: right; background-repeat:no-repeat ; background-image: url('{% static 'myapp/images/Home.png' %}');">
+    
+</body>
+</html>
 
 {% endblock %}

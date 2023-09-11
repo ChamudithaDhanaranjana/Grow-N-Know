@@ -2,6 +2,7 @@ from audioop import reverse
 from pyexpat.errors import messages
 
 from django.views import View
+from myapp.models import CartItem
 from myapp.models import Solution
 from myapp.models import Problem, Feedback, Category, Item, Order, OrderItem
 from django.views.generic.list import ListView
@@ -265,3 +266,33 @@ def registeruser(request):
         template_name="registrationform.html",
         context={"form":form}
     )            
+
+def add_to_cart(request, item_id):
+    item = get_object_or_404(Item, pk=item_id)
+    cart_item, created = CartItem.objects.get_or_create(
+        user=request.user, item=item
+    )
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+    return redirect('view_cart')
+
+def view_cart(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    return render(request, 'cart/view_cart.html', {'cart_items': cart_items})
+
+def update_cart(request, item_id):
+    cart_item = get_object_or_404(CartItem, user=request.user, item__pk=item_id)
+    if request.method == 'POST':
+        quantity = int(request.POST.get('quantity'))
+        if quantity > 0:
+            cart_item.quantity = quantity
+            cart_item.save()
+        else:
+            cart_item.delete()
+    return redirect('view_cart')
+
+def remove_from_cart(request, item_id):
+    cart_item = get_object_or_404(CartItem, user=request.user, item__pk=item_id)
+    cart_item.delete()
+    return redirect('view_cart')

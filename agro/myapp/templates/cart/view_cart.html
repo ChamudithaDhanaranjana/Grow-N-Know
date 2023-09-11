@@ -1,0 +1,13 @@
+<!-- templates/cart/view_cart.html -->
+<h1>Your Shopping Cart</h1>
+<ul>
+    {% for cart_item in cart_items %}
+        <li>
+            {{ cart_item.item.name }} (Quantity: {{ cart_item.quantity }})
+            <a href="{% url 'update_cart' cart_item.item.pk %}">Update</a>
+            <a href="{% url 'remove_from_cart' cart_item.item.pk %}">Remove</a>
+        </li>
+    {% empty %}
+        <li>Your cart is empty.</li>
+    {% endfor %}
+</ul>

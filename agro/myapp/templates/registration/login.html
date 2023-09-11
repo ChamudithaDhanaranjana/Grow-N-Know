@@ -1,32 +1,56 @@
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{% endif %}
+{% extends "base.html" %}
+{% load static tailwind_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% load static %}
+</head>
+<body id="bg" style="background-size: 55%; background-color: #EAEAEA; background-position-x: right; background-repeat:no-repeat ; background-image: url('{% static "myapp/images/background.jpg" %}');">
+   
 
-{% if next %}
-{% if user.is_authenticated %}
-<p>Your account doesn't have access to this page. To proceed,
-    please login with an account that has access.</p>
-{% else %}
-<p>Please login to see this page.</p>
-{% endif %}
-{% endif %}
+    {% block content %}
+    <div class="m-20" style="margin-left: 10%; margin-top: 5%;">
+        <h2 class="mb-4 text-3xl text-center font-bold leading-none tracking-tight text-lime-600 md:text-3xl lg:text-3xl dark:text-lime-600">Login</h2>
 
-<form method="post" action="{% url 'login' %}">
-    {% csrf_token %}
-    <table>
-        <tr>
-            <td>{{ form.username.label_tag }}</td>
-            <td>{{ form.username }}</td>
-        </tr>
-        <tr>
-            <td>{{ form.password.label_tag }}</td>
+        {% if form.errors %}
+        <p class="text-red-500">Your username and password didn't match. Please try again.</p>
+        {% endif %}
+
+        {% if next %}
+        {% if user.is_authenticated %}
+            <p class="text-red-500">Your account doesn't have access to this page. To proceed, please login with an account that has access.</p>
+        {% else %}
+            <p class="text-red-500">Please login to see this page.</p>
+        {% endif %}
+        {% endif %}
+
+        <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <table>
+            <tr>
+            <td class="text-sm tracking-tight font-bold text-2xl text-lime-700 dark:text-lime-700">{{ form.username.label_tag }}</td>
+            <div class="border-y-2 border-lime-700 text-lime-700 placeholder-gray text-sm focus:ring-lime-700 focus:border-lime-700 0 block w-full p-2.5 dark: dark:border-lime-700">
+                <td>{{ form.username }}</td>
+            </div>
+            </tr>
+            <tr>
+            <td class="text-sm tracking-tight font-bold text-2xl text-lime-700 dark:text-lime-700">{{ form.password.label_tag }}</td>
             <td>{{ form.password }}</td>
-        </tr>
-    </table>
+            </tr>
+        </table>
 
-    <input type="submit" value="login">
-    <input type="hidden" name="next" value="{{ next }}">
-</form>
+        <input type="submit" value="Login" class="mt-4 text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+        <input type="hidden" name="next" value="{{ next }}">
+        </form>
 
-{# Assumes you set up the password_reset view in your URLconf #}
-<p><a href="{% url 'password_reset' %}">Lost password?</a></p>
+        {# Assumes you set up the password_reset view in your URLconf #}
+        <p class="mt-4"><a href="{% url 'password_reset' %}" class="text-lime-700 dark:text-lime-700">Lost password?</a></p>
+    </div>
+    {% endblock %}
+</body>
+</html>
+
