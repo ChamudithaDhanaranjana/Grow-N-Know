@@ -6,14 +6,15 @@ from django.utils import timezone
 from django.contrib.auth.models import User
     
 class Problem(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='problems')
     title = models.CharField(max_length=100)
-    description = models.CharField(max_length=500,null=True)
+    description = models.CharField(max_length=500, null=True)
+
     def __str__(self):
-        return self.title + ""
-    def __str__(self) :
-        return self.description + ""
+        return self.title
     
 class Solution(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='solutions')
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE, related_name='solutions')
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

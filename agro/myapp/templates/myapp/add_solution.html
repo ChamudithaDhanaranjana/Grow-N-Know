@@ -1,3 +1,4 @@
+{% extends "base.html" %}
 {% load static tailwind_tags %}
 {% load static %}
 <!DOCTYPE html>
@@ -9,11 +10,11 @@
     <title>Solution</title>
     {% tailwind_css %}
 </head>
+{% block content %}
 <body  id="bg" style="background-size: 55%; background-color: #EAEAEA; background-position-x: right; background-repeat:no-repeat ; background-image: url('{% static "myapp/images/background.jpg" %}');">
-    {% extends "base.html" %}
     <div class="m-20" style="margin-left: 10%; margin-top:5%;">
         <div class="grid grid-cols-3 divide-x">
-            <h1 class="mb-4 text-3xl text-center font-bold leading-none tracking-tight text-lime-600 md:text-3xl lg:text-3xl dark:text-lime-600">
+            <h1 class="mb-4 mt-20 text-3xl text-center font-bold leading-none tracking-tight text-lime-600 md:text-3xl lg:text-3xl dark:text-lime-600">
                 Add a Solution for
             </h1>
         </div>
@@ -26,6 +27,9 @@
         <div class="grid grid-cols-3 divide-x">
             <form method="post">
                 {%csrf_token%}
+                <div class="text-red-500">
+                    {{form.errors}}
+                </div>
                 <div class="mb-6">
                     <div>
                         <textarea rows="4" cols="50" value="{{ solution.description }}" id="description_problem" name="description" type="textarea"
@@ -41,4 +45,5 @@
         </div>
     </div>
 </body>
+{% endblock %}
 </html>

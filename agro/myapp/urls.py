@@ -12,11 +12,11 @@ from myapp.views import OrderListView, OrderCreateView
 urlpatterns = [
 
     path('problemlistview/', ProblemListView.as_view()),
-    path('problemlistview/problemcreateview/', ProblemCreateView.as_view()),
+    path('problemlistview/problemcreateview/', ProblemCreateView.as_view(), name='problem_create'),
     path('problemlistview/problemcreateview/problemlistview', ProblemListView.as_view()),
     path('problemlistview/problemdetailview/<int:pk>', ProblemDetailView.as_view()),
     path('problemlistview/problemcreateview/problemdetailview/<int:pk>', ProblemDetailView.as_view()),
-    path('problemcreateview/', ProblemCreateView.as_view()),
+    path('problemcreateview/', ProblemCreateView.as_view(), name='problem_create'),
     
     path('feedbacklistview/', FeedbackListView.as_view()),
     path('feedbackcreateview/', FeedbackCreateView.as_view()),
@@ -47,6 +47,7 @@ urlpatterns = [
     path('problem/<int:problem_id>/solutions/', SolutionListView.as_view(), name='problem_solutions'),
     path('solution/remove/<int:pk>/', SolutionRemoveView.as_view(), name='solution_remove'),
     path('solution/update/<int:pk>/', SolutionUpdateView.as_view(), name='solution_update'),
+    path('solution/remove/<int:pk>/', SolutionRemoveView.as_view(), name='solution_remove'),
 
 
     path('add_to_cart/<int:item_id>/', views.add_to_cart, name='add_to_cart'),

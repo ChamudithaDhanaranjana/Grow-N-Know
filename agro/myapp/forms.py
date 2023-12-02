@@ -37,6 +37,33 @@ class SolutionForm(forms.ModelForm):
 
 
 class CreateUserForm(UserCreationForm):
+    username = forms.CharField( widget=forms.TextInput(attrs={
+        "class": "input",
+        "type": "text",
+        "placeholder": "Username",
+        'size':'45',
+    }) )
+
+    email = forms.CharField(widget=forms.TextInput(attrs={
+        "class": "input",
+        "type": "email",
+        "placeholder": "Email",
+        'size':'45',
+    }))
+
+    password1 = forms.CharField(widget=forms.TextInput(attrs={
+        "class": "input",
+        "type": "password",
+        "placeholder": "Password",
+        'size':'45',
+    }))
+
+    password2 = forms.CharField(widget=forms.TextInput(attrs={
+        "class": "input",
+        "type": "password",
+        "placeholder": "Password",
+        'size':'45',
+    }))
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']

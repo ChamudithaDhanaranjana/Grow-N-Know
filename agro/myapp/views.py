@@ -1,5 +1,6 @@
 from audioop import reverse
 from pyexpat.errors import messages
+from django.forms import ValidationError
 
 from django.views import View
 from myapp.models import CartItem
@@ -16,7 +17,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.mail import EmailMessage
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
-
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.encoding import force_bytes
@@ -31,6 +34,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.utils.safestring import mark_safe
 from django.template.loader import render_to_string
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def viewprofile(request):
@@ -44,7 +48,21 @@ class ProblemCreateView(CreateView):
     template_name_suffix = "_create"
     model = Problem
     fields = "__all__"
-    success_url = "problemlistview"
+    success_url = 'problem_list'  # Corrected URL name
+
+def problem_create(request):
+    if request.method == 'POST':
+        title = request.POST['title']
+        description = request.POST['description']
+        problem = Problem(user=request.user, title=title, description=description)
+        
+        try:
+            problem.full_clean()  # Perform model validation
+            problem.save()
+            # Successful save
+        except ValidationError as e:
+            # Handle validation errors and display them to the user
+            error_message = ", ".join(e.messages)
 
 class ProblemListView(ListView):
     template_name_suffix = "_index"
@@ -61,10 +79,8 @@ class ProblemDetailView(DetailView):
         context['solutions'] = solutions  # Add solutions to the context
         return context
 
-def problem_create(request):
-    return render(request, 'myapp/problem_create.html')
 
-
+    
 # ..............................Feedback
 class FeedbackListView(ListView):
     template_name_suffix = "_index"
@@ -173,6 +189,7 @@ def add_solution(request, problem_id):
         if form.is_valid():
             solution = form.save(commit=False)
             solution.problem = problem
+            solution = Solution(user=request.user, problem=problem, description=request.POST['description'])
             solution.save()
             return redirect('problem_detail', pk=problem_id)
     else:
@@ -180,10 +197,22 @@ def add_solution(request, problem_id):
 
     return render(request, 'myapp/add_solution.html', {'form': form, 'problem': problem})
 
+# def problem_detail(request, pk):
+#     problem = get_object_or_404(Problem, pk=pk)
+#     solutions = problem.solutions.all()
+#     return render(request, 'myapp/problem_show.html', {'problem': problem, 'solutions': solutions})
 def problem_detail(request, pk):
     problem = get_object_or_404(Problem, pk=pk)
     solutions = problem.solutions.all()
-    return render(request, 'myapp/problem_show.html', {'problem': problem, 'solutions': solutions})
+
+    # Retrieve the success_message from the session
+    success_message = request.session.pop('success_message', None)
+
+    # Pass the success_message to the template context
+    context = {'problem': problem, 'solutions': solutions, 'success_message': success_message}
+
+    return render(request, 'myapp/problem_show.html', context)
+
 
 class MyView(View):
     def get(self, request, pk):
@@ -204,11 +233,29 @@ class SolutionListView(ListView):
         context = super().get_context_data(**kwargs)
         context['problem_id'] = self.kwargs['problem_id']  # Pass problem ID to the template
         return context
+    
 class SolutionRemoveView(View):
+    template_name = 'myapp/confirm_delete_solution.html'  # Create a template for the confirmation page
+
+    def get(self, request, pk):
+        solution = get_object_or_404(Solution, pk=pk)
+        return render(request, self.template_name, {'solution': solution})
+
     def post(self, request, pk):
-        solution = Solution.objects.get(pk=pk)
-        solution.delete()
-        return redirect('problem_detail', pk=solution.problem.pk)
+        solution = get_object_or_404(Solution, pk=pk)
+
+        # Check if the request contains a confirmation flag
+        if 'confirm' in request.POST:
+            # User confirmed the deletion
+            solution.delete()
+            success_message = 'Solution deleted successfully.'
+            request.session['success_message'] = success_message
+
+    # Redirect to the problem_detail view without success_message
+            return redirect('problem_detail', pk=solution.problem.pk)
+        else:
+            # User did not confirm, render the confirmation page again
+            return render(request, self.template_name, {'solution': solution})
 
 class SolutionUpdateView(View):
     def post(self, request, pk):
@@ -228,7 +275,7 @@ def activate(request, uidb64, token):
 def activateEmail(request, user, to_email):
     mail_subject = "Activate your user account."
     message = render_to_string("template_activate_account.html",{
-        'user': user.username,
+        'user': user,
         'domain': get_current_site(request).domain,
         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': account_activation_token.make_token(user),
